@@ -6,12 +6,14 @@
 namespace parser {
 
     struct polynomial {
-        std::string value;
+        std::string number;
         char var;
         char degree;
-        char signal;
+        char exp;
+        char op;
     };
 
+    
     bool isOperator(char c) {
         return 
             c == '-' ||
@@ -37,6 +39,7 @@ namespace parser {
             c == '9';
     }
 
+
     bool isVar(char c) {
         return  
             c == 'x' ||
@@ -44,11 +47,79 @@ namespace parser {
     }
 
 
-    std::vector<struct polynomial> parse(std::string function) {
-        auto size = function.size();
-        auto str = function.c_str();
-        for (int i = 0; i < size; i++) {
+    bool isWhitespace(char c) {
+        return c == ' ';
+    }
+
+
+    void handleNumber(polynomial &pol, std::string fn, int &pos) {
+        while(isNumber(fn.at(pos))) {
+            pol.number += fn.at(pos);
+            pos++;
+        }
+    }
+
+    void handleVar(polynomial &pol, std::string fn, int &pos) {
+        pol.var = fn.at(pos);
+        if (pos < fn.size())
+            pos++;
+    }
+
+    void handleExpSymbol(polynomial &pol, std::string fn, int &pos) {
+        pol.exp = fn.at(pos);
+        if (pos < fn.size())
+            pos++;
+    }
+
+    
+    void handleOperator(polynomial &pol, std::string fn, int &pos) {
+        pol.op = fn.at(pos);
+        if (pos < fn.size())
+            pos++;
+    }
+
+
+
+    std::vector<struct polynomial> parse(std::string fn) {
+        polynomial pol;
+        int pos = 0;
+        int peek = 0;
+        bool polynomialStart = true;
+        bool expectNumber = false;
+        bool expectOp = false;
+        bool expectExpSymbol = false;
+        bool expectVar = false;
+
+        pol.number = "";
+
+        while (pos < fn.size()) {
+            if (isWhitespace(fn.at(pos))) {
+                pos++;
+                continue;
+            }
+
+            if (polynomialStart) {
+                if (isNumber(fn.at(pos))) {
+                    handleNumber(pol, fn, pos);
+                    expectVar = true;
+                }
+
+                if (isVar(fn.at(pos))) {
+                    handleVar(pol, fn, pos);
+                    expectExpSymbol = true;
+                }   
+
+                if (isOperator(fn.at(pos))) {
+                    handleOperator(pol, fn, pos);
+                    expectNumber = true;
+                }
+
+                polynomialStart = false; 
+            }
+
+
             
+            pos++;
         }
     }
     
