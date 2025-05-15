@@ -1,11 +1,26 @@
 #pragma once
 #include <string>
+#include <vector>
+
 
 namespace parser {
+
+    struct polynomial {
+        std::string value;
+        char var;
+        char degree;
+        char signal;
+    };
+
     bool isOperator(char c) {
         return 
             c == '-' ||
             c == '+';
+    }
+
+    bool isExp(char c) {
+        return
+            c == '^';
     }
 
     bool isNumber(char c) {
@@ -27,4 +42,14 @@ namespace parser {
             c == 'x' ||
             c == 'X';
     }
+
+
+    std::vector<struct polynomial> parse(std::string function) {
+        auto size = function.size();
+        auto str = function.c_str();
+        for (int i = 0; i < size; i++) {
+            
+        }
+    }
+    
 };
