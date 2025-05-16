@@ -5,13 +5,21 @@
 
 namespace parser {
 
-    struct polynomial {
+    struct term {
         std::string number;
         char var;
         std::string degree;
         char exp;
         char op;
     };
+
+    int pos = 0;
+    bool polynomialStart = true;
+    bool expectNumber = false;
+    bool expectNumberDegree = false;
+    bool expectOp = false;
+    bool expectExpSymbol = false;
+    bool expectVar = false;
 
     
     bool isOperator(char c) {
@@ -57,7 +65,7 @@ namespace parser {
     }
 
 
-    void handleNumber(polynomial &pol, std::string fn, int &pos) {
+    void handleNumber(term &pol, std::string fn, int &pos) {
         while(isNumber(fn.at(pos)) && pos < fn.size()) {
             pol.number += fn.at(pos);
             if (!isNumber(fn.at(pos + 1)))
@@ -67,7 +75,7 @@ namespace parser {
         }
     }
 
-    void handleNumberDegree(polynomial &pol, std::string fn, int &pos) {
+    void handleNumberDegree(term &pol, std::string fn, int &pos) {
         while(isNumber(fn.at(pos)) && pos < fn.size()) {
             pol.degree += fn.at(pos);
             if (!isNumber(fn.at(pos + 1)))
@@ -77,32 +85,31 @@ namespace parser {
         }
     }
 
-    void handleVar(polynomial &pol, std::string fn, int &pos) {
+    void handleVar(term &pol, std::string fn, int &pos) {
         pol.var = fn.at(pos);
     }
 
-    void handleExpSymbol(polynomial &pol, std::string fn, int &pos) {
+    void handleExpSymbol(term &pol, std::string fn, int &pos) {
         pol.exp = fn.at(pos);
     }
 
     
-    void handleOperator(polynomial &pol, std::string fn, int &pos) {
+    void handleOperator(term &pol, std::string fn, int &pos) {
         pol.op = fn.at(pos);
     }
 
+    void resetState() {
+        polynomialStart = true;
+        expectNumber = false;
+        expectNumberDegree = false;
+        expectOp = false;
+        expectExpSymbol = false;
+        expectVar = false;
+    }
 
-
-    std::vector<struct polynomial> parse(std::string fn) {
-        polynomial pol = {};
-        std::vector<struct polynomial> polynomials;
-
-        int pos = 0;
-        bool polynomialStart = true;
-        bool expectNumber = false;
-        bool expectNumberDegree = false;
-        bool expectOp = false;
-        bool expectExpSymbol = false;
-        bool expectVar = false;
+    std::vector<struct term> parse(std::string fn) {
+        term pol = {};
+        std::vector<struct term> terms;
 
 
         while (pos < fn.size()) {
@@ -115,65 +122,62 @@ namespace parser {
                 if (isOperator(fn.at(pos))) {
                     handleOperator(pol, fn, pos);
                     expectNumber = true;
-                    pos++;
-                    polynomialStart = false; 
-                    continue;
                 }
 
                 else if (isNumber(fn.at(pos))) {
                     handleNumber(pol, fn, pos);
+                    pol.op = '+';
                     expectVar = true;
-                    pos++;
-                    polynomialStart = false; 
-                    continue;
                 }
 
                 else if (isVar(fn.at(pos))) {
                     handleVar(pol, fn, pos);
                     expectExpSymbol = true;
-                    pos++;
-                    polynomialStart = false; 
-                    continue;
                 }   
+
+                polynomialStart = false; 
+            } 
+
+            else {
+                if (expectNumber) {
+                    handleNumber(pol, fn, pos);
+                    expectNumber = false;
+                    expectVar = true;
+                }
+
+                else if (expectExpSymbol) {
+                    handleExpSymbol(pol, fn, pos);
+                    expectExpSymbol = false;
+                    expectNumberDegree = true;
+                }
+
+                else if (expectVar) {
+                    handleVar(pol, fn, pos);
+                    expectVar = false;
+                    expectExpSymbol = true;
+                }
+
+                else if (expectNumberDegree) {
+                    handleNumberDegree(pol, fn, pos);
+                    expectNumberDegree = false;
+                    polynomialStart = true;
+                    terms.push_back(pol);
+                    resetState();
+                    pol = {};
+                }
+
+
+                if (isEquals(fn.at(pos))) {
+                    terms.push_back(pol);
+                    resetState();
+                    pol = {};
+                }
             }
 
-            
-            if (expectNumber) {
-                handleNumber(pol, fn, pos);
-                expectNumber = false;
-                expectVar = true;
-            }
-
-            else if (expectExpSymbol) {
-                handleExpSymbol(pol, fn, pos);
-                expectExpSymbol = false;
-                expectNumberDegree = true;
-            }
-
-            else if (expectVar) {
-                handleVar(pol, fn, pos);
-                expectVar = false;
-                expectExpSymbol = true;
-            }
-
-            else if (expectNumberDegree) {
-                handleNumberDegree(pol, fn, pos);
-                expectNumberDegree = false;
-                polynomialStart = true;
-                polynomials.push_back(pol);
-                pol = {};
-            }
-
-
-            if (isEquals(fn.at(pos))) {
-                polynomials.push_back(pol);
-                pol = {};
-            }
-            
             pos++;
         }
 
-        return polynomials;
+        return terms;
     }
     
 };

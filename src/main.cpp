@@ -6,11 +6,11 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string function("     +488x^30 - 15487x^42 +150=");
+    std::string function("713x^30 +40x^8 - 122x^7 +150=");
 
-    auto pols = parser::parse(function);
+    auto terms = parser::parse(function);
 
-    for (auto i : pols) {
+    for (auto i : terms) {
         std::cout << i.op;
         std::cout << i.number;
         std::cout << i.var;
