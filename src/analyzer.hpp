@@ -7,10 +7,10 @@ namespace parser {
 
     struct term {
         std::string number;
-        char var;
+        std::string var;
         std::string degree;
-        char exp;
-        char op;
+        std::string exp;
+        std::string op;
     };
 
     int pos = 0;
@@ -110,8 +110,13 @@ namespace parser {
         expectVarOrOp = false;
     }
 
+
+    struct term newTerm() {
+        return term {};
+    }
+
     std::vector<struct term> parse(std::string fn) {
-        term term = {};
+        term term = newTerm();
         std::vector<struct term> terms;
 
 
@@ -119,7 +124,7 @@ namespace parser {
             if (isEquals(fn.at(pos))) {
                 terms.push_back(term);
                 resetState();
-                term = {};
+                term = newTerm();
                 break;
             }
 
@@ -165,7 +170,7 @@ namespace parser {
                     else {
                         terms.push_back(term);
                         resetState();
-                        term = {};
+                        term = newTerm();
                         continue;
                     }
                 }
@@ -179,7 +184,7 @@ namespace parser {
                     else {
                         terms.push_back(term);
                         resetState();
-                        term = {};
+                        term = newTerm();
                         continue;
                     }
                     
@@ -190,7 +195,7 @@ namespace parser {
                     expectExpDegree = false;
                     terms.push_back(term);
                     resetState();
-                    term = {};
+                    term = newTerm();
                 }
             }
 
