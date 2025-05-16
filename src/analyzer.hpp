@@ -18,7 +18,7 @@ namespace parser {
     bool expectNumber = false;
     bool expectExpDegree = false;
     bool expectExpOrOp = false;
-    bool expectVar = false;
+    bool expectVarOrOp = false;
 
     
     bool isOperator(char c) {
@@ -107,7 +107,7 @@ namespace parser {
         expectNumber = false;
         expectExpDegree = false;
         expectExpOrOp = false;
-        expectVar = false;
+        expectVarOrOp = false;
     }
 
     std::vector<struct term> parse(std::string fn) {
@@ -137,7 +137,7 @@ namespace parser {
                 else if (isNumber(fn.at(pos))) {
                     handleNumber(term, fn, pos);
                     term.op = '+';
-                    expectVar = true;
+                    expectVarOrOp = true;
                 }
 
                 else if (isVar(fn.at(pos))) {
@@ -152,7 +152,7 @@ namespace parser {
                 if (expectNumber) {
                     handleNumber(term, fn, pos);
                     expectNumber = false;
-                    expectVar = true;
+                    expectVarOrOp = true;
                 }
 
                 else if (expectExpOrOp) {
@@ -163,23 +163,31 @@ namespace parser {
                     }
 
                     else {
-                        termStart = true;
                         terms.push_back(term);
                         resetState();
                         term = {};
+                        continue;
                     }
                 }
 
-                else if (expectVar) {
-                    handleVar(term, fn, pos);
-                    expectVar = false;
-                    expectExpOrOp = true;
+                else if (expectVarOrOp) {
+                    if (isVar(fn.at(pos))) {
+                        handleVar(term, fn, pos);
+                        expectVarOrOp = false;
+                        expectExpOrOp = true;
+                    }
+                    else {
+                        terms.push_back(term);
+                        resetState();
+                        term = {};
+                        continue;
+                    }
+                    
                 }
 
                 else if (expectExpDegree) {
                     handleNumberDegree(term, fn, pos);
                     expectExpDegree = false;
-                    termStart = true;
                     terms.push_back(term);
                     resetState();
                     term = {};
