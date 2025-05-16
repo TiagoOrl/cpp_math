@@ -14,11 +14,10 @@ namespace parser {
     };
 
     int pos = 0;
-    bool polynomialStart = true;
+    bool termStart = true;
     bool expectNumber = false;
-    bool expectNumberDegree = false;
-    bool expectOp = false;
-    bool expectExpSymbol = false;
+    bool expectExpDegree = false;
+    bool expectExpOrOp = false;
     bool expectVar = false;
 
     
@@ -28,7 +27,7 @@ namespace parser {
             c == '+';
     }
 
-    bool isExp(char c) {
+    bool isExpOp(char c) {
         return
             c == '^';
     }
@@ -104,11 +103,10 @@ namespace parser {
     }
 
     void resetState() {
-        polynomialStart = true;
+        termStart = true;
         expectNumber = false;
-        expectNumberDegree = false;
-        expectOp = false;
-        expectExpSymbol = false;
+        expectExpDegree = false;
+        expectExpOrOp = false;
         expectVar = false;
     }
 
@@ -130,7 +128,7 @@ namespace parser {
                 continue;
             }
 
-            if (polynomialStart) {
+            if (termStart) {
                 if (isOperator(fn.at(pos))) {
                     handleOperator(term, fn, pos);
                     expectNumber = true;
@@ -144,10 +142,10 @@ namespace parser {
 
                 else if (isVar(fn.at(pos))) {
                     handleVar(term, fn, pos);
-                    expectExpSymbol = true;
+                    expectExpOrOp = true;
                 }   
 
-                polynomialStart = false; 
+                termStart = false; 
             } 
 
             else {
@@ -157,22 +155,31 @@ namespace parser {
                     expectVar = true;
                 }
 
-                else if (expectExpSymbol) {
-                    handleExpSymbol(term, fn, pos);
-                    expectExpSymbol = false;
-                    expectNumberDegree = true;
+                else if (expectExpOrOp) {
+                    if (isExpOp(fn.at(pos))) {
+                        handleExpSymbol(term, fn, pos);
+                        expectExpDegree = true;
+                        expectExpOrOp = false;
+                    }
+
+                    else {
+                        termStart = true;
+                        terms.push_back(term);
+                        resetState();
+                        term = {};
+                    }
                 }
 
                 else if (expectVar) {
                     handleVar(term, fn, pos);
                     expectVar = false;
-                    expectExpSymbol = true;
+                    expectExpOrOp = true;
                 }
 
-                else if (expectNumberDegree) {
+                else if (expectExpDegree) {
                     handleNumberDegree(term, fn, pos);
-                    expectNumberDegree = false;
-                    polynomialStart = true;
+                    expectExpDegree = false;
+                    termStart = true;
                     terms.push_back(term);
                     resetState();
                     term = {};
