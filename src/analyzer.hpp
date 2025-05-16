@@ -50,8 +50,13 @@ namespace parser {
 
     bool isVar(char c) {
         return  
-            c == 'x' ||
-            c == 'X';
+            c == 'a' ||
+            c == 'b' ||
+            c == 'c' ||
+            c == 'd' ||
+            c == 'e' ||
+            c == 'f' ||
+            c == 'g';
     }
 
 

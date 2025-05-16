@@ -6,7 +6,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string function("713x^30 +40x^8 - 122x^7 +150=");
+    std::string function("713a^30 +40a^8 - 122a^7 +150=");
 
     auto terms = parser::parse(function);
 
