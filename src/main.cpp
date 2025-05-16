@@ -18,6 +18,7 @@ int main(int argc, char const *argv[])
         std::cout << i.degree;
         std::cout << " ";
     }
+    std::cout << '\n';
     
     return 0;
 }

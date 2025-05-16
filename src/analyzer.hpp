@@ -65,9 +65,9 @@ namespace parser {
     }
 
 
-    void handleNumber(term &pol, std::string fn, int &pos) {
+    void handleNumber(term &term, std::string fn, int &pos) {
         while(isNumber(fn.at(pos)) && pos < fn.size()) {
-            pol.number += fn.at(pos);
+            term.number += fn.at(pos);
             if (!isNumber(fn.at(pos + 1)))
                 break;
                 
@@ -75,9 +75,9 @@ namespace parser {
         }
     }
 
-    void handleNumberDegree(term &pol, std::string fn, int &pos) {
+    void handleNumberDegree(term &term, std::string fn, int &pos) {
         while(isNumber(fn.at(pos)) && pos < fn.size()) {
-            pol.degree += fn.at(pos);
+            term.degree += fn.at(pos);
             if (!isNumber(fn.at(pos + 1)))
                 break;
 
@@ -85,17 +85,17 @@ namespace parser {
         }
     }
 
-    void handleVar(term &pol, std::string fn, int &pos) {
-        pol.var = fn.at(pos);
+    void handleVar(term &term, std::string fn, int &pos) {
+        term.var = fn.at(pos);
     }
 
-    void handleExpSymbol(term &pol, std::string fn, int &pos) {
-        pol.exp = fn.at(pos);
+    void handleExpSymbol(term &term, std::string fn, int &pos) {
+        term.exp = fn.at(pos);
     }
 
     
-    void handleOperator(term &pol, std::string fn, int &pos) {
-        pol.op = fn.at(pos);
+    void handleOperator(term &term, std::string fn, int &pos) {
+        term.op = fn.at(pos);
     }
 
     void resetState() {
@@ -108,11 +108,18 @@ namespace parser {
     }
 
     std::vector<struct term> parse(std::string fn) {
-        term pol = {};
+        term term = {};
         std::vector<struct term> terms;
 
 
         while (pos < fn.size()) {
+            if (isEquals(fn.at(pos))) {
+                terms.push_back(term);
+                resetState();
+                term = {};
+                break;
+            }
+
             if (isWhitespace(fn.at(pos))) {
                 pos++;
                 continue;
@@ -120,18 +127,18 @@ namespace parser {
 
             if (polynomialStart) {
                 if (isOperator(fn.at(pos))) {
-                    handleOperator(pol, fn, pos);
+                    handleOperator(term, fn, pos);
                     expectNumber = true;
                 }
 
                 else if (isNumber(fn.at(pos))) {
-                    handleNumber(pol, fn, pos);
-                    pol.op = '+';
+                    handleNumber(term, fn, pos);
+                    term.op = '+';
                     expectVar = true;
                 }
 
                 else if (isVar(fn.at(pos))) {
-                    handleVar(pol, fn, pos);
+                    handleVar(term, fn, pos);
                     expectExpSymbol = true;
                 }   
 
@@ -140,37 +147,30 @@ namespace parser {
 
             else {
                 if (expectNumber) {
-                    handleNumber(pol, fn, pos);
+                    handleNumber(term, fn, pos);
                     expectNumber = false;
                     expectVar = true;
                 }
 
                 else if (expectExpSymbol) {
-                    handleExpSymbol(pol, fn, pos);
+                    handleExpSymbol(term, fn, pos);
                     expectExpSymbol = false;
                     expectNumberDegree = true;
                 }
 
                 else if (expectVar) {
-                    handleVar(pol, fn, pos);
+                    handleVar(term, fn, pos);
                     expectVar = false;
                     expectExpSymbol = true;
                 }
 
                 else if (expectNumberDegree) {
-                    handleNumberDegree(pol, fn, pos);
+                    handleNumberDegree(term, fn, pos);
                     expectNumberDegree = false;
                     polynomialStart = true;
-                    terms.push_back(pol);
+                    terms.push_back(term);
                     resetState();
-                    pol = {};
-                }
-
-
-                if (isEquals(fn.at(pos))) {
-                    terms.push_back(pol);
-                    resetState();
-                    pol = {};
+                    term = {};
                 }
             }
 
