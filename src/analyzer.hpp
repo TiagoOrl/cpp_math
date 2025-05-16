@@ -8,7 +8,7 @@ namespace parser {
     struct polynomial {
         std::string number;
         char var;
-        char degree;
+        std::string degree;
         char exp;
         char op;
     };
@@ -52,45 +52,58 @@ namespace parser {
     }
 
 
+    bool isEquals(char c) {
+        return c == '=';
+    }
+
+
     void handleNumber(polynomial &pol, std::string fn, int &pos) {
-        while(isNumber(fn.at(pos))) {
+        while(isNumber(fn.at(pos)) && pos < fn.size()) {
             pol.number += fn.at(pos);
+            if (!isNumber(fn.at(pos + 1)))
+                break;
+                
+            pos++;
+        }
+    }
+
+    void handleNumberDegree(polynomial &pol, std::string fn, int &pos) {
+        while(isNumber(fn.at(pos)) && pos < fn.size()) {
+            pol.degree += fn.at(pos);
+            if (!isNumber(fn.at(pos + 1)))
+                break;
+
             pos++;
         }
     }
 
     void handleVar(polynomial &pol, std::string fn, int &pos) {
         pol.var = fn.at(pos);
-        if (pos < fn.size())
-            pos++;
     }
 
     void handleExpSymbol(polynomial &pol, std::string fn, int &pos) {
         pol.exp = fn.at(pos);
-        if (pos < fn.size())
-            pos++;
     }
 
     
     void handleOperator(polynomial &pol, std::string fn, int &pos) {
         pol.op = fn.at(pos);
-        if (pos < fn.size())
-            pos++;
     }
 
 
 
     std::vector<struct polynomial> parse(std::string fn) {
-        polynomial pol;
+        polynomial pol = {};
+        std::vector<struct polynomial> polynomials;
+
         int pos = 0;
-        int peek = 0;
         bool polynomialStart = true;
         bool expectNumber = false;
+        bool expectNumberDegree = false;
         bool expectOp = false;
         bool expectExpSymbol = false;
         bool expectVar = false;
 
-        pol.number = "";
 
         while (pos < fn.size()) {
             if (isWhitespace(fn.at(pos))) {
@@ -99,28 +112,68 @@ namespace parser {
             }
 
             if (polynomialStart) {
-                if (isNumber(fn.at(pos))) {
-                    handleNumber(pol, fn, pos);
-                    expectVar = true;
-                }
-
-                if (isVar(fn.at(pos))) {
-                    handleVar(pol, fn, pos);
-                    expectExpSymbol = true;
-                }   
-
                 if (isOperator(fn.at(pos))) {
                     handleOperator(pol, fn, pos);
                     expectNumber = true;
+                    pos++;
+                    polynomialStart = false; 
+                    continue;
                 }
 
-                polynomialStart = false; 
+                else if (isNumber(fn.at(pos))) {
+                    handleNumber(pol, fn, pos);
+                    expectVar = true;
+                    pos++;
+                    polynomialStart = false; 
+                    continue;
+                }
+
+                else if (isVar(fn.at(pos))) {
+                    handleVar(pol, fn, pos);
+                    expectExpSymbol = true;
+                    pos++;
+                    polynomialStart = false; 
+                    continue;
+                }   
+            }
+
+            
+            if (expectNumber) {
+                handleNumber(pol, fn, pos);
+                expectNumber = false;
+                expectVar = true;
+            }
+
+            else if (expectExpSymbol) {
+                handleExpSymbol(pol, fn, pos);
+                expectExpSymbol = false;
+                expectNumberDegree = true;
+            }
+
+            else if (expectVar) {
+                handleVar(pol, fn, pos);
+                expectVar = false;
+                expectExpSymbol = true;
+            }
+
+            else if (expectNumberDegree) {
+                handleNumberDegree(pol, fn, pos);
+                expectNumberDegree = false;
+                polynomialStart = true;
+                polynomials.push_back(pol);
+                pol = {};
             }
 
 
+            if (isEquals(fn.at(pos))) {
+                polynomials.push_back(pol);
+                pol = {};
+            }
             
             pos++;
         }
+
+        return polynomials;
     }
     
 };
