@@ -6,11 +6,11 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string function("     +488x^30 - 15487x^42 +150=");
+    std::string function("713a^30 +40a - 122a +150=");
 
-    auto pols = parser::parse(function);
+    auto terms = parser::parse(function);
 
-    for (auto i : pols) {
+    for (auto i : terms) {
         std::cout << i.op;
         std::cout << i.number;
         std::cout << i.var;
@@ -18,6 +18,7 @@ int main(int argc, char const *argv[])
         std::cout << i.degree;
         std::cout << " ";
     }
+    std::cout << '\n';
     
     return 0;
 }
