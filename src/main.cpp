@@ -4,7 +4,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string function("-x^5 + x^3 + 45x^2 + 177 - 1880 =");
+    std::string function("-x^5 + x^3 + 45x^2 - x + 177 - 1880 =");
 
     auto terms = parser::parse(function);
 
