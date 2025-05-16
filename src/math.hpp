@@ -3,7 +3,7 @@
 
 namespace math {
 
-    void derivative(std::string function) {
+    void derivative(std::vector<parser::term> function) {
         
     }
 }
