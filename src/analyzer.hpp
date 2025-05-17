@@ -7,15 +7,15 @@ namespace parser {
 
     struct term {
         std::string number;
-        char var;
+        std::string var;
         std::string degree;
-        char exp;
-        char op;
+        std::string exp;
+        std::string op;
     };
 
     int pos = 0;
     bool termStart = true;
-    bool expectNumber = false;
+    bool expectNumberOrVar = false;
     bool expectExpDegree = false;
     bool expectExpOrOp = false;
     bool expectVarOrOp = false;
@@ -55,7 +55,8 @@ namespace parser {
             c == 'd' ||
             c == 'e' ||
             c == 'f' ||
-            c == 'g';
+            c == 'g' ||
+            c == 'x';
     }
 
 
@@ -104,14 +105,19 @@ namespace parser {
 
     void resetState() {
         termStart = true;
-        expectNumber = false;
+        expectNumberOrVar = false;
         expectExpDegree = false;
         expectExpOrOp = false;
         expectVarOrOp = false;
     }
 
+
+    struct term newTerm() {
+        return term {};
+    }
+
     std::vector<struct term> parse(std::string fn) {
-        term term = {};
+        term term = newTerm();
         std::vector<struct term> terms;
 
 
@@ -119,7 +125,7 @@ namespace parser {
             if (isEquals(fn.at(pos))) {
                 terms.push_back(term);
                 resetState();
-                term = {};
+                term = newTerm();
                 break;
             }
 
@@ -131,7 +137,7 @@ namespace parser {
             if (termStart) {
                 if (isOperator(fn.at(pos))) {
                     handleOperator(term, fn, pos);
-                    expectNumber = true;
+                    expectNumberOrVar = true;
                 }
 
                 else if (isNumber(fn.at(pos))) {
@@ -149,10 +155,17 @@ namespace parser {
             } 
 
             else {
-                if (expectNumber) {
-                    handleNumber(term, fn, pos);
-                    expectNumber = false;
-                    expectVarOrOp = true;
+                if (expectNumberOrVar) {
+                    if (isNumber(fn.at(pos))) {
+                        handleNumber(term, fn, pos);
+                        expectVarOrOp = true;
+                    } 
+                    else {
+                        handleVar(term, fn, pos);
+                        expectExpOrOp = true;   
+                    }
+
+                    expectNumberOrVar = false;
                 }
 
                 else if (expectExpOrOp) {
@@ -165,7 +178,7 @@ namespace parser {
                     else {
                         terms.push_back(term);
                         resetState();
-                        term = {};
+                        term = newTerm();
                         continue;
                     }
                 }
@@ -179,7 +192,7 @@ namespace parser {
                     else {
                         terms.push_back(term);
                         resetState();
-                        term = {};
+                        term = newTerm();
                         continue;
                     }
                     
@@ -190,7 +203,7 @@ namespace parser {
                     expectExpDegree = false;
                     terms.push_back(term);
                     resetState();
-                    term = {};
+                    term = newTerm();
                 }
             }
 
