@@ -11,25 +11,9 @@ int main(int argc, char const *argv[])
     auto function = parser::parse(funStr);
     auto derivFn = math::derivate(function);
 
-    std::cout << "function:\t";
-    for (auto i : function) {
-        std::cout << i.op;
-        std::cout << i.coeff;
-        std::cout << i.var;
-        std::cout << i.expOp;
-        std::cout << i.exp;
-        std::cout << ' ';
-    }
-
-    std::cout << "\nderiv function:\t";
-    for (auto i : derivFn) {
-        std::cout << i.op;
-        std::cout << i.coeff;
-        std::cout << i.var;
-        std::cout << i.expOp;
-        std::cout << i.exp;
-        std::cout << ' ';
-    }
+    math::print(function);
+    math::print(derivFn);
+    math::print(math::derivate(derivFn));
     std::cout << "\n";
     return 0;
 }

@@ -51,4 +51,18 @@ namespace math {
 
         return derivFunction;
     }
+
+
+    void print(std::vector<parser::term> fn) {
+        std::cout << "function:\t";
+        for (auto i : fn) {
+            std::cout << i.op;
+            std::cout << i.coeff;
+            std::cout << i.var;
+            std::cout << i.expOp;
+            std::cout << i.exp;
+            std::cout << ' ';
+        }
+        std::cout << '\n';
+    }
 }
