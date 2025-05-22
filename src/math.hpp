@@ -1,7 +1,54 @@
 #pragma once
 #include "parser.hpp"
+#include <cmath>
 
 namespace math {
+
+
+    int solveFor(std::vector<parser::term> function, int x) {
+       int sum = 0;
+       int value;
+       
+        for (auto term : function) {
+            value = 0;
+
+            // e.g. constant
+            if (term.var.size() == 0)
+                value = std::stoi(term.coeff);
+
+            
+            // e.g. x, 12x...
+            if (term.var.size() > 0 && term.exp.size() == 0) {
+
+                // e.g. 12x
+                if (term.coeff.size() > 0)
+                    value = x * std::stoi(term.coeff);
+
+                // e.g. x
+                else 
+                    value = x;
+            }
+
+            // e.g. x^3, 45x^3...
+            if (term.exp.size() > 0) {
+
+                // e.g. 45x^3
+                if (term.coeff.size() > 0) 
+                    value = std::stoi(term.coeff) * (std::pow(x, std::stoi(term.exp)));
+
+                // e.g. x^3
+                else
+                    value = std::pow(x, std::stoi(term.exp));
+            }
+
+            if (term.op == "-")
+                value = -value;
+
+            sum += value;
+        }
+
+        return sum;
+    }
 
     std::vector<parser::term> derivate(std::vector<parser::term> function) {
         std::vector<parser::term> derivFunction;
