@@ -6,7 +6,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string funStr("3x^7 - 6x^2 + 38x  + 144 =");
+    std::string funStr("380x^7 - 67x^6 - 15x^2 + 38x  + 144 =");
 
     auto function = parser::parse(funStr);
     auto derivFn = math::derivate(function);
