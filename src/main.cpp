@@ -6,30 +6,16 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string funStr("-50x^6 -x^7 - x^3 +45x^2 + 480x +x -1880  =");
+    std::string funStr("380x^7 - 67x^6 - 15x^2 + 38x  + 144 =");
 
     auto function = parser::parse(funStr);
     auto derivFn = math::derivate(function);
 
-    std::cout << "function:\t";
-    for (auto i : function) {
-        std::cout << i.op;
-        std::cout << i.coeff;
-        std::cout << i.var;
-        std::cout << i.expOp;
-        std::cout << i.exp;
-        std::cout << ' ';
-    }
-
-    std::cout << "\nderiv function:\t";
-    for (auto i : derivFn) {
-        std::cout << i.op;
-        std::cout << i.coeff;
-        std::cout << i.var;
-        std::cout << i.expOp;
-        std::cout << i.exp;
-        std::cout << ' ';
-    }
+    math::print(function);
+    std::cout << "f(2) = " << math::solveFor(function, 7) << '\n';
+    math::print(derivFn);
+    std::cout << "f'(2) = " << math::solveFor(derivFn, 7) << '\n';
+    
     std::cout << "\n";
     return 0;
 }
