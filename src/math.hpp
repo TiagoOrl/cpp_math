@@ -14,15 +14,15 @@ namespace math {
 
             // e.g. constant
             if (term.var.size() == 0)
-                value = std::stoi(term.coeff);
+                value = term.coeff;
 
             
             // e.g. x, 12x...
-            if (term.var.size() > 0 && term.exp.size() == 0) {
+            if (term.var.size() > 0 && term.exp == 1) {
 
                 // e.g. 12x
-                if (term.coeff.size() > 0)
-                    value = x * std::stoi(term.coeff);
+                if (term.coeff != 0)
+                    value = x * term.coeff;
 
                 // e.g. x
                 else 
@@ -30,15 +30,15 @@ namespace math {
             }
 
             // e.g. x^3, 45x^3...
-            if (term.exp.size() > 0) {
+            if (term.exp != 1) {
 
                 // e.g. 45x^3
-                if (term.coeff.size() > 0) 
-                    value = std::stoi(term.coeff) * (std::pow(x, std::stoi(term.exp)));
+                if (term.coeff != 0) 
+                    value = term.coeff * (std::pow(x, term.exp));
 
                 // e.g. x^3
                 else
-                    value = std::pow(x, std::stoi(term.exp));
+                    value = std::pow(x, term.exp);
             }
 
             if (term.op == "-")
@@ -62,37 +62,36 @@ namespace math {
             derivTerm.op = term.op;
 
                 // e.g. x, 12x...
-            if (term.var.size() > 0 && term.exp.size() == 0) {
+            if (term.var.size() > 0 && term.exp == 1) {
 
                 // e.g. 12x
-                if (term.coeff.size() > 0)
+                if (term.coeff != 0)
                     derivTerm.coeff = term.coeff; 
 
                 // e.g. x
                 else
-                    derivTerm.coeff = "1";
+                    derivTerm.coeff = 1;
             }
             
             // e.g. x^3, 45x^3...
-            if (term.exp.size() > 0) {
+            if (term.exp != 1) {
                 derivTerm.var = term.var;
                 
                 // e.g. 45x^3
-                if (term.coeff.size() > 0) {
-                    derivTerm.coeff = std::to_string(std::stoi(term.coeff) * std::stoi(term.exp));
+                if (term.coeff != 0) {
+                    derivTerm.coeff = term.coeff * term.exp;
                 }
                 // e.g. x^3
                 else {
-                    derivTerm.coeff = std::to_string(std::stoi(term.exp));
+                    derivTerm.coeff = term.exp;
                 }                    
 
-                if (std::stoi(term.exp) > 2) {
+                if (term.exp > 2) {
                     derivTerm.expOp = "^";
-                    derivTerm.exp = std::to_string(std::stoi(term.exp) - 1);
+                    derivTerm.exp = term.exp - 1;
                 }   
             }
 
-            derivTerm.rawTerm = derivTerm.op + derivTerm.coeff + derivTerm.var + derivTerm.expOp + derivTerm.exp;
             derivFunction.push_back(derivTerm);
         }
 
@@ -107,7 +106,8 @@ namespace math {
             std::cout << i.coeff;
             std::cout << i.var;
             std::cout << i.expOp;
-            std::cout << i.exp;
+            if (i.exp != 1)
+                std::cout << i.exp;
             std::cout << ' ';
         }
         std::cout << '\n';
