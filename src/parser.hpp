@@ -6,12 +6,11 @@
 namespace parser {
 
     struct term {
-        std::string coeff;
+        float coeff = 0;
         std::string var;
-        std::string exp;
+        int exp = 1;
         std::string expOp;
         std::string op;
-        std::string rawTerm;
     };
 
     int pos = 0;
@@ -72,23 +71,29 @@ namespace parser {
 
 
     void handleNumber(term &term, std::string fn, int &pos) {
+        std::string numberStr
+        ;
         while(isNumber(fn.at(pos)) && pos < fn.size()) {
-            term.coeff += fn.at(pos);
+            numberStr += fn.at(pos);
             if (!isNumber(fn.at(pos + 1)))
                 break;
                 
             pos++;
         }
+        term.coeff = std::stof(numberStr);
     }
 
     void handleNumberDegree(term &term, std::string fn, int &pos) {
+        std::string numberStr;
         while(isNumber(fn.at(pos)) && pos < fn.size()) {
-            term.exp += fn.at(pos);
+            numberStr += fn.at(pos);
             if (!isNumber(fn.at(pos + 1)))
                 break;
 
             pos++;
         }
+
+        term.exp = std::stoi(numberStr);
     }
 
     void handleVar(term &term, std::string fn, int &pos) {
@@ -124,7 +129,6 @@ namespace parser {
 
         while (pos < fn.size()) {
             if (isEquals(fn.at(pos))) {
-                term.rawTerm = term.op + term.coeff + term.var + term.expOp + term.exp;
                 terms.push_back(term);
                 resetState();
                 term = newTerm();
@@ -178,7 +182,6 @@ namespace parser {
                     }
 
                     else {
-                        term.rawTerm = term.op + term.coeff + term.var + term.expOp + term.exp;
                         terms.push_back(term);
                         resetState();
                         term = newTerm();
@@ -193,7 +196,6 @@ namespace parser {
                         expectExpOrOp = true;
                     }
                     else {
-                        term.rawTerm = term.op + term.coeff + term.var + term.expOp + term.exp;
                         terms.push_back(term);
                         resetState();
                         term = newTerm();
@@ -205,7 +207,6 @@ namespace parser {
                 else if (expectExpDegree) {
                     handleNumberDegree(term, fn, pos);
                     expectExpDegree = false;
-                    term.rawTerm = term.op + term.coeff + term.var + term.expOp + term.exp;
                     terms.push_back(term);
                     resetState();
                     term = newTerm();
