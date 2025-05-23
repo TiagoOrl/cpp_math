@@ -100,10 +100,11 @@ namespace math {
 
 
     void print(std::vector<parser::term> fn) {
-        std::cout << "function:\t";
+        std::cout << "f(x):\t";
         for (auto i : fn) {
             std::cout << i.op;
-            std::cout << i.coeff;
+            if (i.coeff != 0)
+                std::cout << i.coeff;
             std::cout << i.var;
             std::cout << i.expOp;
             if (i.exp != 1)

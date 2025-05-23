@@ -6,15 +6,15 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string funStr("380x^7 - 67x^6 - 15x^2 + 38x  + 144 =");
+    std::string funStr("x -   x^3 + 4x -10 =");
 
     auto function = parser::parse(funStr);
     auto derivFn = math::derivate(function);
 
     math::print(function);
-    std::cout << "f(2) = " << math::solveFor(function, 7) << '\n';
+    std::cout << "f(4):\t" << math::solveFor(function, 4) << '\n';
     math::print(derivFn);
-    std::cout << "f'(2) = " << math::solveFor(derivFn, 7) << '\n';
+    std::cout << "f'(4):\t" << math::solveFor(derivFn, 4) << '\n';
     
     std::cout << "\n";
     return 0;
