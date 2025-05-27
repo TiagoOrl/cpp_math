@@ -3,7 +3,13 @@
 #include <cmath>
 
 namespace math {
+    int solveFor(std::vector<parser::term> function, int x);
 
+    void plotRange(std::vector<parser::term> fn, int from, int to) {
+        for (int i = from; i <= to; i++) {
+            std::cout << "f(" << i << ") = " << solveFor(fn, i) << '\n';
+        }
+    }
 
     int solveFor(std::vector<parser::term> function, int x) {
        int sum = 0;
