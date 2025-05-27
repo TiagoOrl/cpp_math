@@ -3,17 +3,57 @@
 #include <cmath>
 
 namespace math {
-    int solveFor(std::vector<parser::term> function, int x);
+    long solveFor(std::vector<parser::term> function, int x);
+    bool containsRoot(std::vector<parser::term> fn, int start);
+    void print(std::vector<parser::term> fn);
 
     void plotRange(std::vector<parser::term> fn, int from, int to) {
+        print(fn);
         for (int i = from; i <= to; i++) {
-            std::cout << "f(" << i << ") = " << solveFor(fn, i) << '\n';
+
+            if (containsRoot(fn, i))
+                std::cout << "f(" << i << ") = " << solveFor(fn, i) << " close root" << '\n';
+            else
+                std::cout << "f(" << i << ") = " << solveFor(fn, i) << '\n';
         }
     }
 
-    int solveFor(std::vector<parser::term> function, int x) {
-       int sum = 0;
-       int value;
+
+    bool containsRoot(std::vector<parser::term> fn, int start) {
+        long a = solveFor(fn, start);
+        long b = solveFor(fn, start + 1);
+
+
+        if (std::signbit(a) != std::signbit(b))
+            return true;
+
+        return false;
+    }
+
+
+    std::vector<std::vector<int>> aproxRootsByRange(std::vector<parser::term> fn, int from, int to) {
+        std::vector<std::vector<int>> pairs;
+
+        for (int i = from; i < to; i++) {
+            if (containsRoot(fn, i))
+                pairs.push_back(std::vector{i , i + 1});
+        }
+
+        return pairs;
+    }
+
+    void printRootsAprox(std::vector<parser::term> fn, int from, int to) {
+        print(fn);
+        auto roots = aproxRootsByRange(fn, from, to);
+        for (auto i : roots) {
+            std::cout << "range found: " << i.at(0) << " " << i.at(1) << '\n';
+        }
+    }
+
+
+    long solveFor(std::vector<parser::term> function, int x) {
+       long sum = 0;
+       long value;
        
         for (auto term : function) {
             value = 0;

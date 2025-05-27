@@ -6,7 +6,7 @@
 namespace parser {
 
     struct term {
-        float coeff = 0;
+        long coeff = 0L;
         std::string var;
         int exp = 1;
         std::string expOp;
