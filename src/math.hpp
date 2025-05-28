@@ -3,7 +3,7 @@
 #include <cmath>
 
 namespace math {
-    long solveFor(std::vector<parser::term> function, int x);
+    float solveFor(std::vector<parser::term> function, int x);
     bool containsRoot(std::vector<parser::term> fn, int start);
     void print(std::vector<parser::term> fn);
 
@@ -31,7 +31,7 @@ namespace math {
     }
 
 
-    std::vector<std::vector<int>> aproxRootsByRange(std::vector<parser::term> fn, int from, int to) {
+    std::vector<std::vector<int>> getAproxRootsRange(std::vector<parser::term> fn, int from, int to) {
         std::vector<std::vector<int>> pairs;
 
         for (int i = from; i < to; i++) {
@@ -44,16 +44,16 @@ namespace math {
 
     void printRootsAprox(std::vector<parser::term> fn, int from, int to) {
         print(fn);
-        auto roots = aproxRootsByRange(fn, from, to);
+        auto roots = getAproxRootsRange(fn, from, to);
         for (auto i : roots) {
             std::cout << "range found: " << i.at(0) << " " << i.at(1) << '\n';
         }
     }
 
 
-    long solveFor(std::vector<parser::term> function, int x) {
-       long sum = 0;
-       long value;
+    float solveFor(std::vector<parser::term> function, int x) {
+       float sum = 0;
+       float value;
        
         for (auto term : function) {
             value = 0;
@@ -142,6 +142,25 @@ namespace math {
         }
 
         return derivFunction;
+    }
+
+
+    std::vector<float> findRoots(std::vector<parser::term> fn, int from, int to, u_int iterations) {
+        auto derivFn = derivate(fn);
+        auto rootRanges = getAproxRootsRange(fn, from, to);
+
+        std::vector<float> roots;
+
+        for (auto i : rootRanges) {
+            float xn = (i.at(0) + i.at(1)) / 2;
+            
+            for (int j = 0; j < iterations; j++) {
+                xn = xn - (solveFor(fn, xn) / solveFor(derivFn, xn));
+            }
+            roots.push_back(xn);
+        }
+
+        return roots;
     }
 
 

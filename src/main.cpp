@@ -13,11 +13,18 @@ int main(int argc, char const *argv[])
     int from = -20;
     int to = 20;
 
-    math::plotRange(function, from, to);
-    math::printRootsAprox(function, from, to);
-
     math::plotRange(derivFn, from, to);
-    math::printRootsAprox(derivFn, from, to);
+    // math::printRootsAprox(function, from, to);
+
+    auto roots = math::findRoots(derivFn, from, to, 10);
+    
+    std::cout << "roots:\n";
+    for (auto i : roots) {
+        std::cout << i << '\n';
+    }
+
+    // math::plotRange(derivFn, from, to);
+    // math::printRootsAprox(derivFn, from, to);
     
     std::cout << "\n";
     return 0;
